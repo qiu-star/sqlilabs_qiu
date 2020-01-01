@@ -1,0 +1,19 @@
+url:http://localhost/sqli/Less-8/?id=1
+显示：You are in...........
+url:http://localhost/sqli/Less-8/?id=1'
+显示：不出现You are in...........的文本
+由此可以判断出可以采用基于布尔值的盲注
+
+编写脚本如Less-8.py所示，主要通过响应内容的长短来判断
+
+表名：
+users,uagents,emails,referers
+推测users存取用户名和密码
+
+字段名：
+id,username,password,user,current_connections,total_connections
+推测username和password分别对应用户名和密码
+
+字段值：
+dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+
