@@ -1,0 +1,4 @@
+在浏览器网络选项选择手动代理配置，在http proxy中填入127.0.0.1端口号为8080
+在BurpSuite中Proxy中的Options中Proxy Listener中添加127.0.0.1端口号为8080的设置
+此时在浏览器输入http://localhost/sqli回车，BurpSuite会自动对包进行拦截（如果拦截下来的包没有什么用，直接点forward，浏览器会跳转到相应界面）
+比如做POST基于错误的注入类型题的时候，就选择Action->send to repeater，然后在repeater中对request body进行修改

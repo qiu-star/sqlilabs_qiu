@@ -1,0 +1,7 @@
+GET和POST区别：
+GET在传输过程中，数据被放在请求的url中，POST请求会把参数放在request body，安全性较高;
+如果参数有很多，get的长度也会有限制;
+get请求的内容，浏览器会主动缓存;
+get仅仅支持url编码格式，post支持多种;
+post对参数类型没有限制，get仅支持ASCII字符;
+后退页面时，get没有影响，post会再次提交请求。

