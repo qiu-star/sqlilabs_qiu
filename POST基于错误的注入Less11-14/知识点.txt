@@ -5,3 +5,7 @@ get请求的内容，浏览器会主动缓存;
 get仅仅支持url编码格式，post支持多种;
 post对参数类型没有限制，get仅支持ASCII字符;
 后退页面时，get没有影响，post会再次提交请求。
+
+使用sqlmap进行POST注入：
+复制BurpSuite截断的HTTP请求数据包到文本文件中，使用sqlmap -r 文件路径 -p 指定探测参数
+

