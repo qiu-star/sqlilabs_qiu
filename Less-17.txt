@@ -1,6 +1,0 @@
-uname=admin&passwd=123&submit=Submit
-显示成功修改flag1.jpg
-uname=admin'&passwd=123&submit=Submit
-显示修改失败slap1.jpg（它让我滚
-推测sql语句为：update 表名 set passwd = '输入的密码' where uname = 'uname';
-

