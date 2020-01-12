@@ -1,0 +1,12 @@
+SQL注入中，用户提交的参数都会被代码中的某些措施进行过滤。但一般是过滤掉用户直接提交的参数，对于HTTP头中提交的内容很有可能没有进行过滤，例如HTTP头中的User-Agent、Referer、Cookies等
+
+方法一：
+updatexml(xml_document, xpath_string, new_value):
+xml_document：目标xml文档
+xpath_string：xml路径
+new_value：更新的内容
+如果报错的话，会把xml路径爆出来
+故经常用' and update(1,concat(0x7e,(select database()),0x7e),1) or '1' = '1
+
+方法二：
+使用sqlmap：指定注入位置进行注入，在保存的文件中，对于参数的修改为*
