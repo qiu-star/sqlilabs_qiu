@@ -8,3 +8,7 @@ Base64编码是从二进制到字符的过程，可用于在HTTP环境下传递�
 
 base64_decode(str):PHP语言中用于解密Base64加密字符串的函数
 base64_encode(str):PHP用于加密
+
+使用sqlmap：
+sqlmap -r raw_21.txt --batch --level 3 --tamper base64encode.py
+--tamper base64encode.py 说明是Base64加密的

