@@ -30,3 +30,4 @@ for i in range(1,namelen):
 	break
 
 print("result:"+name)
+

